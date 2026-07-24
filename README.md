@@ -1,11 +1,10 @@
-# QbitOS
+
 
 
 <p align="center">
   <img src="https://i.ibb.co/jkCpjxvR/HN-co-To-XYAEDc-JF.png" alt="QbitOS Banner" width="700">
 </p>
 
-<h1 align="center">QbitOS</h1>
 
 <p align="center">
   A Rust 2024 native multimodal cognitive AI operating system.

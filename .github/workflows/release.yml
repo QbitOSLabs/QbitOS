@@ -1,0 +1,210 @@
+# QbitOS Release Workflow
+#
+# Triggered by pushing a git tag matching `v*.*.*`. Builds release binaries for
+# Linux x86_64, Windows x86_64, and macOS (both x86_64 and aarch64), packages
+# each with the migrations, README, LICENSE, and .env.example, then creates a
+# GitHub Release with auto-generated changelog.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  # ─── Linux x86_64 ──────────────────────────────────────────────────────────
+  build-linux:
+    name: Build Linux x86_64
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust 1.85.0 (MSRV)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libclang-dev \
+            libssl-dev \
+            pkg-config \
+            cmake
+
+      - name: Cache Cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+          key: release-linux-x86_64
+
+      - name: Build release binary
+        run: cargo build --release -p qbitos-cli
+
+      - name: Package release artifact
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          STAGE="qbitos-${VERSION}-x86_64-unknown-linux-gnu"
+          mkdir -p "${STAGE}/memory/migrations"
+          cp target/release/qbitos "${STAGE}/qbitos"
+          cp -r memory/migrations/. "${STAGE}/memory/migrations/"
+          cp README.md "${STAGE}/"
+          cp LICENSE "${STAGE}/"
+          cp .env.example "${STAGE}/" 2>/dev/null || true
+          tar -czf "${STAGE}.tar.gz" "${STAGE}"
+          shasum -a 256 "${STAGE}.tar.gz" > "${STAGE}.tar.gz.sha256"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux-x86_64
+          path: |
+            qbitos-*.tar.gz
+            qbitos-*.tar.gz.sha256
+          retention-days: 7
+
+  # ─── Windows x86_64 ────────────────────────────────────────────────────────
+  build-windows:
+    name: Build Windows x86_64
+    runs-on: windows-2022
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust 1.85.0 (MSRV)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+
+      - name: Install system dependencies (cmake)
+        uses: lukka/get-cmake@latest
+
+      - name: Cache Cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+          key: release-windows-x86_64
+
+      - name: Build release binary
+        run: cargo build --release -p qbitos-cli
+
+      - name: Package release artifact
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF_NAME -replace '^v',''
+          $stage = "qbitos-$version-x86_64-pc-windows-msvc"
+          New-Item -ItemType Directory -Force -Path "$stage/memory/migrations" | Out-Null
+          Copy-Item target/release/qbitos.exe "$stage/qbitos.exe"
+          Copy-Item memory/migrations/* "$stage/memory/migrations/" -Recurse
+          Copy-Item README.md "$stage/"
+          Copy-Item LICENSE "$stage/"
+          if (Test-Path .env.example) { Copy-Item .env.example "$stage/" }
+          Compress-Archive -Path "$stage/*" -DestinationPath "$stage.zip"
+          $hash = (Get-FileHash "$stage.zip" -Algorithm SHA256).Hash
+          "$hash  $stage.zip" | Out-File -Encoding ascii "$stage.zip.sha256"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-x86_64
+          path: |
+            qbitos-*.zip
+            qbitos-*.zip.sha256
+          retention-days: 7
+
+  # ─── macOS (x86_64 + aarch64) ──────────────────────────────────────────────
+  build-macos:
+    name: Build macOS (${{ matrix.target }})
+    runs-on: macos-12
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-apple-darwin
+          - aarch64-apple-darwin
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust 1.85.0 (MSRV)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+          targets: ${{ matrix.target }}
+
+      - name: Install cmake
+        uses: lukka/get-cmake@latest
+
+      - name: Cache Cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+          key: release-macos-${{ matrix.target }}
+
+      - name: Build release binary
+        run: cargo build --release -p qbitos-cli --target ${{ matrix.target }}
+
+      - name: Package release artifact
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          TARGET="${{ matrix.target }}"
+          STAGE="qbitos-${VERSION}-${TARGET}"
+          mkdir -p "${STAGE}/memory/migrations"
+          cp "target/${TARGET}/release/qbitos" "${STAGE}/qbitos"
+          cp -r memory/migrations/. "${STAGE}/memory/migrations/"
+          cp README.md "${STAGE}/"
+          cp LICENSE "${STAGE}/"
+          cp .env.example "${STAGE}/" 2>/dev/null || true
+          tar -czf "${STAGE}.tar.gz" "${STAGE}"
+          shasum -a 256 "${STAGE}.tar.gz" > "${STAGE}.tar.gz.sha256"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-${{ matrix.target }}
+          path: |
+            qbitos-*.tar.gz
+            qbitos-*.tar.gz.sha256
+          retention-days: 7
+
+  # ─── Publish GitHub Release ────────────────────────────────────────────────
+  release:
+    name: Publish GitHub Release
+    needs: [build-linux, build-windows, build-macos]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: List downloaded artifacts
+        run: ls -laR release-assets
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: QbitOS ${{ github.ref_name }}
+          generate_release_notes: true
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            release-assets/qbitos-*.tar.gz
+            release-assets/qbitos-*.tar.gz.sha256
+            release-assets/qbitos-*.zip
+            release-assets/qbitos-*.zip.sha256

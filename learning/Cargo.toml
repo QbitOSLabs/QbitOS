@@ -1,0 +1,25 @@
+[package]
+name = "qbitos-learning"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Online learning, feedback loops, preference learning for QbitOS"
+
+[lib]
+name = "qbitos_learning"
+path = "src/lib.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+parking_lot.workspace = true
+ahash = { workspace = true, features = ["serde"] }
+uuid.workspace = true
+chrono.workspace = true
+itertools.workspace = true
+
+[dev-dependencies]
+proptest = "1.5"

@@ -1,0 +1,65 @@
+# Docker build context ignore list.
+# Keeps the build context small and the layer cache effective by excluding
+# anything the Dockerfile does not need.
+
+# ─── Build artifacts ──────────────────────────────────────────────────────────
+target/
+**/target/
+*.rs.bk
+
+# ─── Version control ──────────────────────────────────────────────────────────
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# ─── Documentation (README.md is explicitly kept via Dockerfile COPY) ─────────
+docs/
+*.md
+!README.md
+
+# ─── Editor / IDE ─────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ─── Frontend (desktop) build artifacts ──────────────────────────────────────
+node_modules/
+desktop/node_modules/
+desktop/dist/
+desktop/.vite/
+**/.parcel-cache/
+
+# ─── Secrets & local config ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+
+# ─── Logs & runtime state ─────────────────────────────────────────────────────
+*.log
+logs/
+rustc-ice-*
+*.lock# (Cargo.lock is NOT ignored — it is required for reproducible builds)
+
+# ─── Test & benchmark reports ─────────────────────────────────────────────────
+*.snapshot
+tarpaulin-report.html
+cobertura.xml
+lcov.info
+test-results.json
+
+# ─── Local data & volumes ─────────────────────────────────────────────────────
+data/
+.qbitos/
+*.duckdb
+*.duckdb.wal
+
+# ─── OS cruft ─────────────────────────────────────────────────────────────────
+Thumbs.db
+desktop.ini

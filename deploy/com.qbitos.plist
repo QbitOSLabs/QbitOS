@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.qbitos</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/qbitos</string>
+        <string>serve</string>
+        <string>--addr</string>
+        <string>0.0.0.0:8080</string>
+        <string>--name</string>
+        <string>qbitos-prod</string>
+        <string>--persistent-events</string>
+        <string>--restricted-cors</string>
+    </array>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>QBITOS_DATA_DIR</key>
+        <string>/var/lib/qbitos</string>
+        <key>RUST_LOG</key>
+        <string>info</string>
+        <key>QBITOS_LOG_FORMAT</key>
+        <string>json</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/var/log/qbitos/stdout.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/var/log/qbitos/stderr.log</string>
+
+    <key>HardResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>65536</integer>
+    </dict>
+</dict>
+</plist>

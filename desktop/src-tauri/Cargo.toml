@@ -1,0 +1,67 @@
+[package]
+name = "qbitos-desktop"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "QbitOS desktop application (Tauri v2)"
+
+[lib]
+name = "qbitos_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "qbitos-desktop"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [], optional = true }
+
+[dependencies]
+tauri = { version = "2.0", features = [], optional = true }
+tauri-plugin-shell = { version = "2.0", optional = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+parking_lot = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+sysinfo = { workspace = true }
+anyhow = { workspace = true }
+flume = { workspace = true }
+base64 = { workspace = true }
+
+qbitos-kernel = { workspace = true }
+qbitos-memory = { workspace = true }
+qbitos-planner = { workspace = true }
+qbitos-skills = { workspace = true }
+qbitos-tools = { workspace = true }
+qbitos-neural-engine = { workspace = true }
+qbitos-vision = { workspace = true }
+qbitos-speech = { workspace = true }
+qbitos-world-model = { workspace = true }
+qbitos-evolution = { workspace = true }
+qbitos-data = { workspace = true }
+qbitos-services = { workspace = true }
+thiserror = { workspace = true }
+
+# HTTP server for embedded service mode (frontend connects to localhost:8080)
+axum = { version = "0.8", features = ["ws", "json", "macros", "tokio"] }
+tower-http = { version = "0.6", features = ["cors"] }
+
+[features]
+# Default: enable both CLI and desktop modes. The Tauri CLI runs
+# `cargo run --no-default-features --features cli` for `tauri dev`, but
+# `tauri.conf.json` adds `features = ["desktop"]` to the build, so both
+# features end up enabled. For headless CLI-only builds, use
+# `cargo build -p qbitos-desktop --no-default-features --features cli`.
+default = ["cli", "desktop"]
+# CLI mode (no Tauri / GTK dependencies) — for headless builds and tests.
+cli = []
+# Full Tauri desktop mode — requires GTK, webkit2gtk, libsoup3 system libraries.
+desktop = ["dep:tauri", "dep:tauri-plugin-shell", "dep:tauri-build"]
+# Tauri custom protocol (used by `tauri build`).
+custom-protocol = ["desktop", "tauri/custom-protocol"]

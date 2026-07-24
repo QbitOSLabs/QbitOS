@@ -1,0 +1,25 @@
+[package]
+name = "qbitos-safety"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Safety: content filtering, prompt injection defense, output validation"
+
+[lib]
+name = "qbitos_safety"
+path = "src/lib.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+parking_lot.workspace = true
+ahash = { workspace = true, features = ["serde"] }
+regex = "1.11"
+uuid.workspace = true
+chrono.workspace = true
+
+[dev-dependencies]
+proptest = "1.5"

@@ -1,0 +1,85 @@
+[package]
+name = "qbitos-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "QbitOS command-line orchestrator: wires all subsystems into a single binary"
+
+[[bin]]
+name = "qbitos"
+path = "src/bin/qbitos.rs"
+
+[lib]
+name = "qbitos_cli"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+parking_lot = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+ahash = { workspace = true }
+clap = { version = "4.5", features = ["derive", "env"] }
+rustyline = "14.0"
+colored = "2.1"
+flume = { workspace = true }
+sysinfo = { workspace = true }
+
+# QbitOS subsystems
+qbitos-kernel = { workspace = true }
+qbitos-memory = { workspace = true }
+qbitos-planner = { workspace = true }
+qbitos-skills = { workspace = true }
+qbitos-tools = { workspace = true }
+qbitos-neural-engine = { workspace = true }
+qbitos-vision = { workspace = true }
+qbitos-speech = { workspace = true }
+qbitos-world-model = { workspace = true }
+qbitos-evolution = { workspace = true }
+qbitos-data = { workspace = true }
+qbitos-reasoning = { workspace = true }
+qbitos-learning = { workspace = true }
+qbitos-safety = { workspace = true }
+qbitos-training = { workspace = true }
+qbitos-services = { workspace = true }
+qbitos-algorithms = { workspace = true }
+qbitos-multilingual = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.10"
+
+[features]
+# PostgreSQL is the default primary backend.
+default = ["postgres-backed"]
+
+# Database backend passthrough features.
+postgres-backed = ["qbitos-memory/postgres-backed"]
+qdrant-backed = ["qbitos-memory/qdrant-backed"]
+redis-backed = ["qbitos-memory/redis-backed"]
+rocksdb-backed = ["qbitos-memory/rocksdb-backed"]
+mongodb-backed = ["qbitos-memory/mongodb-backed"]
+duckdb-backed = ["qbitos-memory/duckdb-backed"]
+
+# Enable all backends.
+all-backends = [
+    "postgres-backed",
+    "qdrant-backed",
+    "redis-backed",
+    "rocksdb-backed",
+    "mongodb-backed",
+    "duckdb-backed",
+]
+
+# Wire real backends into the SkillModule.
+real-backends = ["qbitos-skills/real-backends"]
+

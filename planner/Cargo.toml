@@ -1,0 +1,36 @@
+[package]
+name = "qbitos-planner"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Goal engine, task graph, reasoning, and decision engine for QbitOS"
+
+[lib]
+name = "qbitos_planner"
+path = "src/lib.rs"
+
+[dependencies]
+tokio.workspace = true
+async-trait.workspace = true
+parking_lot.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+petgraph.workspace = true
+ahash.workspace = true
+indexmap.workspace = true
+itertools.workspace = true
+
+qbitos-memory.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }

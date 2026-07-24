@@ -1,0 +1,80 @@
+# CODEOWNERS for the QbitOS workspace.
+#
+# Syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Each line: <path-pattern> <owner1> <owner2> ...
+# Owners can be GitHub usernames (@alice) or team names (@org/team).
+# The last matching pattern takes precedence.
+
+# ─── Default ownership ────────────────────────────────────────────────────────
+# Any file not matched by a more specific pattern below is owned by the
+# maintainers team. They are responsible for the overall workspace coherence.
+*                           @qbitos/maintainers
+
+# ─── Workspace & DevOps ───────────────────────────────────────────────────────
+/.github/                   @qbitos/maintainers @qbitos/devops
+/.github/workflows/         @qbitos/devops
+/Dockerfile                 @qbitos/devops
+/docker-compose.yml         @qbitos/devops
+/.dockerignore              @qbitos/devops
+/scripts/                   @qbitos/devops
+/config/                    @qbitos/devops
+/deploy/                    @qbitos/devops
+/Cargo.toml                 @qbitos/maintainers
+/Cargo.lock                 @qbitos/maintainers
+/rust-toolchain.toml        @qbitos/maintainers
+
+# ─── Core kernel ──────────────────────────────────────────────────────────────
+/kernel/                    @qbitos/kernel-team
+
+# ─── Memory subsystem ─────────────────────────────────────────────────────────
+/memory/                    @qbitos/memory-team
+/memory/migrations/         @qbitos/memory-team @qbitos/devops
+
+# ─── Planner & reasoning ──────────────────────────────────────────────────────
+/planner/                   @qbitos/planner-team
+/reasoning/                 @qbitos/planner-team
+
+# ─── Skills, tools & safety ───────────────────────────────────────────────────
+/skills/                    @qbitos/tools-team
+/tools/                     @qbitos/tools-team
+/safety/                    @qbitos/tools-team @qbitos/safety-team
+
+# ─── Neural engine ────────────────────────────────────────────────────────────
+/neural_engine/             @qbitos/ml-team
+
+# ─── Perception (vision, speech) ──────────────────────────────────────────────
+/vision/                    @qbitos/perception-team
+/speech/                    @qbitos/perception-team
+
+# ─── World model & evolution ──────────────────────────────────────────────────
+/world_model/               @qbitos/world-model-team
+/evolution/                 @qbitos/world-model-team
+
+# ─── Training & learning ──────────────────────────────────────────────────────
+/training/                  @qbitos/ml-team
+/learning/                  @qbitos/ml-team
+
+# ─── Data pipeline ────────────────────────────────────────────────────────────
+/data/                      @qbitos/data-team
+
+# ─── Services (HTTP/WS/RPC) ───────────────────────────────────────────────────
+/services/                  @qbitos/services-team
+
+# ─── CLI ──────────────────────────────────────────────────────────────────────
+/cli/                       @qbitos/cli-team
+
+# ─── Desktop (Tauri + React) ─────────────────────────────────────────────────
+/desktop/                   @qbitos/desktop-team
+/desktop/src-tauri/         @qbitos/desktop-team
+
+# ─── Algorithms & utilities ───────────────────────────────────────────────────
+/algorithms/                @qbitos/kernel-team
+
+# ─── Multilingual NLP ─────────────────────────────────────────────────────────
+/multilingual/              @qbitos/perception-team
+
+# ─── Examples & docs ──────────────────────────────────────────────────────────
+/examples/                  @qbitos/maintainers
+/examples_pkg/              @qbitos/maintainers
+/docs/                      @qbitos/maintainers

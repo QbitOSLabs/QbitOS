@@ -1,0 +1,45 @@
+[package]
+name = "qbitos-speech"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Speech: STT (Whisper-style), TTS (VITS-style), audio engine"
+
+[lib]
+name = "qbitos_speech"
+path = "src/lib.rs"
+
+[dependencies]
+tokio.workspace = true
+async-trait.workspace = true
+parking_lot.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+ahash.workspace = true
+itertools.workspace = true
+rayon.workspace = true
+
+rustfft = "6.2"
+rubato = "0.16"
+dasp = { version = "0.11", features = ["all"] }
+
+qbitos-neural-engine.workspace = true
+qbitos-memory.workspace = true
+
+# Optional: live audio I/O via cpal (requires ALSA on Linux)
+cpal = { version = "0.15", optional = true }
+symphonia = { version = "0.5", features = ["mp3", "wav", "ogg", "flac", "aac"] }
+
+[features]
+default = []
+live_audio = ["dep:cpal"]

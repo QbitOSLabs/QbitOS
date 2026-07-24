@@ -1,0 +1,27 @@
+# Rust
+target/
+**/*.rs.bk
+*.pdb
+*.swp
+
+# Tauri
+desktop/src-tauri/target/
+desktop/node_modules/
+desktop/dist/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Env
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

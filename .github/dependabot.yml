@@ -1,0 +1,103 @@
+# Dependabot configuration for QbitOS
+#
+# Keeps Rust workspace dependencies and GitHub Actions versions up to date.
+# Updates are grouped to reduce PR noise and scheduled weekly.
+
+version: 2
+
+updates:
+  # ─── Rust workspace dependencies ─────────────────────────────────────────
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    groups:
+      # Group all minor/patch updates together to minimize PR noise.
+      rust-minor:
+        update-types:
+          - "minor"
+          - "patch"
+      # Major version bumps get their own PR for visibility.
+      rust-major:
+        update-types:
+          - "major"
+    commit-message:
+      prefix: "deps(rust)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+    reviewers:
+      - "qbitos/maintainers"
+
+  # ─── Per-crate Cargo.toml updates ────────────────────────────────────────
+  - package-ecosystem: "cargo"
+    directory: "/kernel"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "rust", "kernel"]
+
+  - package-ecosystem: "cargo"
+    directory: "/memory"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "rust", "memory"]
+
+  - package-ecosystem: "cargo"
+    directory: "/neural_engine"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "rust", "neural_engine"]
+
+  - package-ecosystem: "cargo"
+    directory: "/services"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "rust", "services"]
+
+  - package-ecosystem: "cargo"
+    directory: "/cli"
+    schedule:
+      interval: "weekly"
+    groups:
+      rust-minor:
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "rust", "cli"]
+
+  # ─── GitHub Actions versions ─────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "deps(ci)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "qbitos/maintainers"

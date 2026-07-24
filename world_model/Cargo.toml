@@ -1,0 +1,34 @@
+[package]
+name = "qbitos-world-model"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "World model: knowledge graph, entity engine, causal reasoning, simulation"
+
+[lib]
+name = "qbitos_world_model"
+path = "src/lib.rs"
+
+[dependencies]
+tokio.workspace = true
+parking_lot.workspace = true
+async-trait.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+ahash = { workspace = true, features = ["serde"] }
+itertools.workspace = true
+petgraph.workspace = true
+rayon.workspace = true
+
+qbitos-memory.workspace = true
+ndarray = { workspace = true }

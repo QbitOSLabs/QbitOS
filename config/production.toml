@@ -1,0 +1,98 @@
+# QbitOS Production Configuration
+#
+# This file is loaded by the kernel at startup when QBITOS_CONFIG_PATH points
+# to it. Values can be overridden by environment variables (QBITOS_* prefix).
+# Production-safe defaults: safety enforced, JSON logs, conservative limits.
+
+# ─── Server ──────────────────────────────────────────────────────────────────
+[server]
+# Network interface to bind the HTTP/WS/RPC listener.
+host = "0.0.0.0"
+# TCP port for the public API surface. Keep 8080 in containers; reverse-proxy
+# with TLS in front (see deploy/qbitos.nginx).
+port = 8080
+# Tokio worker threads. 0 = use physical CPU count. Set explicitly to constrain
+# the service on shared hosts.
+workers = 0
+# Maximum simultaneous HTTP/1+HTTP/2 connections. WebSocket upgrades count
+# against this limit. Tune based on reverse-proxy keep-alive settings.
+max_connections = 4096
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+[logging]
+# tracing filter directive. Production should be at least `info`; lower the
+# level for specific crates as needed (e.g. `qbitos=debug,hyper=warn`).
+level = "info"
+# Output format: "json" for structured logging (recommended for prod log
+# aggregation), "pretty" for human-readable colored output.
+format = "json"
+# Optional file path for tracing-appender rolling logs. Leave empty to log
+# only to stdout (Docker / systemd journald will capture it).
+file_path = "/var/log/qbitos/qbitos.log"
+
+# ─── Memory ──────────────────────────────────────────────────────────────────
+[memory]
+# Storage backend: postgres | qdrant | redis | mongodb | rocksdb | sqlite |
+# duckdb | sled. PostgreSQL is the recommended production backend (ACID +
+# pgvector for HNSW-style search).
+backend = "postgres"
+# Connection pool size per process. Each connection holds a TCP socket +
+# Postgres backend process, so 32 is a reasonable default for a single instance.
+pool_size = 32
+# Cache TTL in seconds for the in-process L1 hot cache. 300s matches the
+# typical cognitive-cycle frequency.
+cache_ttl_secs = 300
+# Path to SQL migrations applied on startup via sqlx::migrate!.
+migration_dir = "/opt/qbitos/migrations"
+
+# ─── Safety ──────────────────────────────────────────────────────────────────
+[safety]
+# Master switch. When true, all tool calls pass through the guardrail pipeline,
+# output validators, and audit log. NEVER set to false in production.
+enforced = true
+# Append every tool invocation to the audit log (append-only, signed when
+# QBITOS_AUDIT_SIGNING_KEY is set).
+audit_log = true
+# Allow the self-improvement loop to propose & apply code/skill changes without
+# human approval. MUST be false in production; enable only in sandboxed dev.
+allow_self_improve = false
+# Hard ceiling on tool calls per cognitive cycle. Prevents runaway loops.
+max_tool_calls_per_cycle = 32
+
+# ─── Neural Engine ───────────────────────────────────────────────────────────
+[neural_engine]
+# Default compute device: "cpu", "cuda", "metal". Auto-falls back to CPU if
+# the requested device is unavailable.
+default_device = "cpu"
+# Quantization level: "none" | "int8" | "int4" | "fp8". int4 halves VRAM at a
+# small perplexity cost; recommended for >7B models on consumer GPUs.
+quantization = "int8"
+# Enable mixed-precision (fp16/bf16) matmuls. ~2x throughput on Ampere+.
+mixed_precision = true
+# Recompute attention activations during backward to trade ~20% compute for
+# ~40% activation-memory savings. Enable for long-context training.
+gradient_checkpointing = false
+
+# ─── Training ────────────────────────────────────────────────────────────────
+[training]
+# Master switch for the background training loop. Disable in pure-inference
+# deployments to save CPU/GPU cycles.
+enabled = false
+# Auto-advance curriculum stage when success_rate >= threshold. Disable for
+# manual control in research settings.
+curriculum_auto_advance = true
+# Maximum number of concurrent training jobs (e.g. self-play + DPO + skill
+# optimization). Each job uses ~1 GPU or N CPU cores.
+max_concurrent = 2
+
+# ─── Limits ──────────────────────────────────────────────────────────────────
+[limits]
+# Maximum HTTP request body size in megabytes. Large file uploads should go
+# through the streaming endpoint, not the JSON API.
+max_request_size_mb = 16
+# HTTP request timeout (incl. streaming responses). WebSocket and long-poll
+# endpoints are exempt.
+request_timeout_secs = 60
+# Maximum concurrent WebSocket connections. Each holds an open TCP socket +
+# event-bus subscriber slot. Tune together with server.max_connections.
+ws_max_connections = 1024

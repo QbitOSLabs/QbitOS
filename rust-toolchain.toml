@@ -1,0 +1,8 @@
+[toolchain]
+# Recommended: latest stable (1.97.1 as of July 2026).
+# The project's MSRV (minimum supported Rust version) is 1.85,
+# so any stable Rust >= 1.85 will work. Using the latest stable
+# gives you the best compiler performance and diagnostics.
+channel = "1.97.1"
+components = ["rustfmt", "clippy"]
+profile = "minimal"

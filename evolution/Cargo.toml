@@ -1,0 +1,33 @@
+[package]
+name = "qbitos-evolution"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Evolution engine: evaluator, improvement engine, regression guard"
+
+[lib]
+name = "qbitos_evolution"
+path = "src/lib.rs"
+
+[dependencies]
+tokio.workspace = true
+async-trait.workspace = true
+parking_lot.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+ahash.workspace = true
+itertools.workspace = true
+rayon.workspace = true
+
+qbitos-memory.workspace = true
+qbitos-skills.workspace = true

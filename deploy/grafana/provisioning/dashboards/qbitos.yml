@@ -1,0 +1,17 @@
+# Grafana dashboard provisioning for QbitOS.
+# Auto-loads all JSON dashboards from /var/lib/grafana/dashboards/.
+
+apiVersion: 1
+
+providers:
+  - name: QbitOS Dashboards
+    orgId: 1
+    folder: QbitOS
+    folderUid: qbitos
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

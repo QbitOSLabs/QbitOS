@@ -1,0 +1,64 @@
+[package]
+name = "qbitos-memory"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "L0-L5 biological memory fabric for QbitOS"
+
+[lib]
+name = "qbitos_memory"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { workspace = true, features = ["fs", "io-util", "rt"] }
+futures.workspace = true
+parking_lot.workspace = true
+async-trait.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+dashmap.workspace = true
+ahash = { workspace = true, features = ["serde"] }
+indexmap.workspace = true
+smallvec.workspace = true
+arc-swap.workspace = true
+itertools.workspace = true
+half.workspace = true
+ndarray.workspace = true
+rayon.workspace = true
+sha2.workspace = true
+petgraph.workspace = true
+rand = { version = "0.8", features = ["small_rng"] }
+
+# Optional DB backends (all real, production-quality implementations)
+qdrant-client = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }
+redis = { workspace = true, optional = true }
+rocksdb = { workspace = true, optional = true }
+mongodb = { workspace = true, optional = true }
+duckdb = { workspace = true, optional = true }
+
+[features]
+default = ["hnsw", "postgres-backed"]
+hnsw = []
+postgres-backed = ["dep:sqlx"]
+qdrant-backed = ["dep:qdrant-client"]
+redis-backed = ["dep:redis"]
+rocksdb-backed = ["dep:rocksdb"]
+mongodb-backed = ["dep:mongodb"]
+duckdb-backed = ["dep:duckdb"]
+all-backends = ["postgres-backed", "qdrant-backed", "redis-backed", "rocksdb-backed", "mongodb-backed", "duckdb-backed"]
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros"] }
+proptest = "1.5"
+tempfile = "3.10"

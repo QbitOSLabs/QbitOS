@@ -1,0 +1,208 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "showPoints": "auto",
+            "spanNulls": true
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "legend": { "calcs": ["mean", "p99"], "displayMode": "table", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"observe\"}[5m]))",
+          "legendFormat": "Observe p99",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"understand\"}[5m]))",
+          "legendFormat": "Understand p99",
+          "refId": "B"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"create_goal\"}[5m]))",
+          "legendFormat": "CreateGoal p99",
+          "refId": "C"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"plan\"}[5m]))",
+          "legendFormat": "Plan p99",
+          "refId": "D"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"execute\"}[5m]))",
+          "legendFormat": "Execute p99",
+          "refId": "E"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"verify\"}[5m]))",
+          "legendFormat": "Verify p99",
+          "refId": "F"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"learn\"}[5m]))",
+          "legendFormat": "Learn p99",
+          "refId": "G"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(qbitos_stage_duration_seconds_bucket{stage=\"improve\"}[5m]))",
+          "legendFormat": "Improve p99",
+          "refId": "H"
+        }
+      ],
+      "title": "Per-Stage Latency (p99) — 8-stage Cognitive Loop",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "green", "value": 0.9 }
+            ]
+          },
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "expr": "rate(qbitos_skill_executions_success_total[5m]) / (rate(qbitos_skill_executions_total[5m]) + 1)",
+          "legendFormat": "{{skill}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Skill Success Rate by Skill",
+      "type": "gauge"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "bars", "fillOpacity": 70, "lineWidth": 1 },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "id": 3,
+      "options": {
+        "legend": { "calcs": ["mean"], "displayMode": "table", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "expr": "rate(qbitos_tool_dispatch_duration_seconds_sum[5m]) / (rate(qbitos_tool_dispatch_duration_seconds_count[5m]) + 1)",
+          "legendFormat": "{{tool}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Tool Dispatch Latency by Tool",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "spanNulls": true },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 4,
+      "options": {
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "expr": "qbitos_training_step_total",
+          "legendFormat": "Steps",
+          "refId": "A"
+        },
+        {
+          "expr": "qbitos_curriculum_stage",
+          "legendFormat": "Curriculum Stage",
+          "refId": "B"
+        }
+      ],
+      "title": "Training Progress",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 20, "lineWidth": 2, "spanNulls": true },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 5,
+      "options": {
+        "legend": { "calcs": ["lastNotNull"], "displayMode": "table", "placement": "bottom" }
+      },
+      "targets": [
+        {
+          "expr": "qbitos_experience_replay_size",
+          "legendFormat": "Replay Buffer",
+          "refId": "A"
+        },
+        {
+          "expr": "qbitos_meta_strategy_reward{strategy=\"epsilon_greedy\"}",
+          "legendFormat": "ε-greedy",
+          "refId": "B"
+        },
+        {
+          "expr": "qbitos_meta_strategy_reward{strategy=\"ucb1\"}",
+          "legendFormat": "UCB1",
+          "refId": "C"
+        },
+        {
+          "expr": "qbitos_meta_strategy_reward{strategy=\"softmax\"}",
+          "legendFormat": "Softmax",
+          "refId": "D"
+        }
+      ],
+      "Title": "Meta-Learning Strategy Rewards",
+      "title": "Meta-Learning Strategy Rewards",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["qbitos", "cognitive"],
+  "time": { "from": "now-1h", "to": "now" },
+  "timezone": "browser",
+  "title": "QbitOS — Cognitive Loop Detail",
+  "uid": "qbitos-cognitive",
+  "version": 1
+}

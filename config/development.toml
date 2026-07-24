@@ -1,0 +1,78 @@
+# QbitOS Development Configuration
+#
+# Dev-friendly defaults: loopback binding, debug logs, self-improvement on,
+# small pools, relaxed limits. Override per-machine by editing this file or
+# setting QBITOS_* environment variables.
+
+# ─── Server ──────────────────────────────────────────────────────────────────
+[server]
+# Bind to loopback only — dev servers should never be reachable on the LAN.
+host = "127.0.0.1"
+# Default dev port. Change if you run multiple instances side-by-side.
+port = 8080
+# 0 = use physical CPU count. Lower for laptops to keep the fan quiet.
+workers = 0
+# Lower than prod so connection-exhaustion bugs surface fast.
+max_connections = 256
+
+# ─── Logging ─────────────────────────────────────────────────────────────────
+[logging]
+# Verbose but still useful: qbitos internals at debug, deps at info.
+level = "debug"
+# Colored, human-readable output for terminal consumption.
+format = "pretty"
+# Leave empty to log only to stdout; set to a path for rolling file logs.
+file_path = ""
+
+# ─── Memory ──────────────────────────────────────────────────────────────────
+[memory]
+# SQLite is the zero-setup dev default — no external process needed.
+# Switch to "postgres" to test against the docker-compose stack.
+backend = "sqlite"
+# Small pool is plenty for local single-user dev.
+pool_size = 8
+# Short TTL so cache-related bugs surface quickly during iteration.
+cache_ttl_secs = 60
+# Relative path — resolved against the working directory.
+migration_dir = "./memory/migrations"
+
+# ─── Safety ──────────────────────────────────────────────────────────────────
+[safety]
+# Keep enforcement ON even in dev — you want to test the guardrails.
+enforced = true
+# Audit log on, but to stderr only (no signing key set in dev).
+audit_log = true
+# Allow the self-improvement loop to apply changes locally. Disable if you
+# want to inspect proposals before they take effect.
+allow_self_improve = true
+# Small cap so runaway loops are noisy and obvious.
+max_tool_calls_per_cycle = 16
+
+# ─── Neural Engine ───────────────────────────────────────────────────────────
+[neural_engine]
+# CPU is always available; switch to "cuda" or "metal" if you have the hw.
+default_device = "cpu"
+# No quantization in dev — preserve numerical fidelity for debugging.
+quantization = "none"
+# Disable mixed precision in dev to catch dtype-mismatch bugs.
+mixed_precision = false
+# Disabled: gradient checkpointing slows forward passes ~20%.
+gradient_checkpointing = false
+
+# ─── Training ────────────────────────────────────────────────────────────────
+[training]
+# Enable the training loop in dev so curriculum/replay code paths execute.
+enabled = true
+# Auto-advance through difficulty stages to exercise the full pipeline.
+curriculum_auto_advance = true
+# One job at a time — dev machines rarely have spare capacity.
+max_concurrent = 1
+
+# ─── Limits ──────────────────────────────────────────────────────────────────
+[limits]
+# Larger than prod to ease file upload testing.
+max_request_size_mb = 64
+# Long timeout for debugging slow handlers with breakpoints attached.
+request_timeout_secs = 600
+# Small cap; you won't have 1000 browser tabs open in dev.
+ws_max_connections = 32

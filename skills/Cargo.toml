@@ -1,0 +1,35 @@
+[package]
+name = "qbitos-skills"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Skill genome: registry, generator, optimizer, and executor for QbitOS"
+
+[lib]
+name = "qbitos_skills"
+path = "src/lib.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+parking_lot = { workspace = true }
+ahash = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+async-trait = { workspace = true }
+tracing = { workspace = true }
+
+qbitos-memory = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+
+[features]
+default = []
+# Real backends (LLM inference, tool dispatch) — enables concrete implementations
+# that connect to the neural engine and tool VM. When disabled, only noop backends
+# are available (for testing).
+real-backends = []

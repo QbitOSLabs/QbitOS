@@ -1,0 +1,154 @@
+# QbitOS Benchmarks & Load Testing
+#
+# Runs weekly (Sunday 03:00 UTC) and on manual dispatch.
+# Executes `cargo bench` for all crates with benchmarks, then runs an HTTP
+# load test against a temporary QbitOS instance using `oha` (Rust load tester).
+# Results are uploaded as a CI artifact for trend analysis.
+
+name: Benchmarks
+
+on:
+  schedule:
+    # Every Sunday at 03:00 UTC
+    - cron: "0 3 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  benchmarks:
+    name: Run criterion benchmarks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust 1.85.0 (MSRV)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libclang-dev libssl-dev pkg-config cmake
+
+      - name: Install oha (HTTP load tester)
+        run: |
+          cargo install oha --locked || true
+
+      - name: Cache Cargo build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ". -> target"
+          key: benchmarks
+
+      - name: Run kernel benchmarks
+        run: cargo bench -p qbitos-kernel --bench cognitive_loop -- --warm-up-time 1 --measurement-time 5
+
+      - name: Run algorithms benchmarks
+        run: cargo bench -p qbitos-algorithms -- --warm-up-time 1 --measurement-time 5
+
+      - name: Run memory benchmarks
+        run: cargo bench -p qbitos-memory -- --warm-up-time 1 --measurement-time 5 || true
+
+      - name: Collect criterion HTML reports
+        if: always()
+        run: |
+          mkdir -p benchmark-results
+          find target/criterion -name "index.html" -type f 2>/dev/null | while read -r f; do
+            rel="${f#target/criterion/}"
+            dir="benchmark-results/$(dirname "$rel")"
+            mkdir -p "$dir"
+            cp "$f" "$dir/"
+          done
+          # Also copy the comparison summary
+          if [ -f target/criterion/index.html ]; then
+            cp target/criterion/index.html benchmark-results/
+          fi
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
+  load-test:
+    name: HTTP load test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust 1.85.0 (MSRV)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.85.0
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libclang-dev libssl-dev pkg-config cmake
+
+      - name: Install oha
+        run: cargo install oha --locked || true
+
+      - name: Build qbitos CLI (release)
+        run: cargo build --release -p qbitos-cli
+
+      - name: Start QbitOS service
+        run: |
+          ./target/release/qbitos serve --addr 127.0.0.1:8080 --name load-test > qbitos.log 2>&1 &
+          echo $! > qbitos.pid
+          # Wait up to 30 seconds for the service to be ready
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8080/api/v1/health > /dev/null 2>&1; then
+              echo "Service ready after ${i}s"
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:8080/api/v1/health || (echo "Service failed to start"; cat qbitos.log; exit 1)
+
+      - name: Run health endpoint load test (60s, 100 concurrent)
+        run: |
+          oha --no-tui -z 60s -c 100 http://127.0.0.1:8080/api/v1/health > load-test-health.txt 2>&1 || true
+          cat load-test-health.txt
+
+      - name: Run cognitive cycle load test (30s, 10 concurrent)
+        run: |
+          oha --no-tui -z 30s -c 10 -m POST \
+            -H "content-type: application/json" \
+            -d '{"prompt":"What is 2+2?","context":{}}' \
+            http://127.0.0.1:8080/api/v1/cognitive/cycle > load-test-cognitive.txt 2>&1 || true
+          cat load-test-cognitive.txt
+
+      - name: Stop QbitOS service
+        if: always()
+        run: |
+          if [ -f qbitos.pid ]; then
+            kill "$(cat qbitos.pid)" 2>/dev/null || true
+            rm qbitos.pid
+          fi
+
+      - name: Upload load test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results-${{ github.run_id }}
+          path: |
+            load-test-health.txt
+            load-test-cognitive.txt
+            qbitos.log
+          retention-days: 14

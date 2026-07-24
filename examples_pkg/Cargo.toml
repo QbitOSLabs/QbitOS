@@ -1,0 +1,45 @@
+[package]
+name = "qbitos-examples"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "End-to-end examples for QbitOS"
+publish = false
+
+[dependencies]
+tokio = { workspace = true, features = ["full"] }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+reqwest = { version = "0.12", features = ["json"] }
+tokio-tungstenite = "0.24"
+
+qbitos-services = { workspace = true }
+qbitos-training = { workspace = true }
+qbitos-skills = { workspace = true }
+qbitos-memory = { workspace = true }
+
+[[example]]
+name = "cognitive_cycle"
+path = "../examples/cognitive_cycle.rs"
+
+[[example]]
+name = "ws_events"
+path = "../examples/ws_events.rs"
+
+[[example]]
+name = "rpc_client"
+path = "../examples/rpc_client.rs"
+
+[[example]]
+name = "self_improvement_loop"
+path = "../examples/self_improvement_loop.rs"
+
+[lib]
+name = "qbitos_examples"
+path = "src/lib.rs"

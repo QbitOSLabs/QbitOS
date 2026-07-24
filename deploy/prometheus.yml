@@ -1,0 +1,48 @@
+# QbitOS Prometheus scrape configuration
+#
+# Scrape the QbitOS service every 15s. The /metrics endpoint exposes:
+#   - cognitive cycles/sec, per-stage latencies
+#   - memory layer sizes (L0–L5)
+#   - tool dispatch counts and error rates
+#   - safety guardrail hits and audit-log size
+#   - HTTP/WS/RPC request counters
+#
+# Adjust the scrape target if QbitOS is behind a reverse proxy.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: "qbitos-prod"
+
+scrape_configs:
+  # ─── QbitOS cognitive service ───────────────────────────────────────────────
+  - job_name: "qbitos"
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ["qbitos:8080"]
+        labels:
+          service: "qbitos"
+          env: "prod"
+
+  # ─── PostgreSQL exporter (if pg_exporter sidecar is enabled) ────────────────
+  - job_name: "postgres"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+        labels:
+          service: "postgres"
+          env: "prod"
+
+  # ─── Redis exporter ─────────────────────────────────────────────────────────
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]
+        labels:
+          service: "redis"
+          env: "prod"
+
+  # ─── Prometheus self-monitoring ─────────────────────────────────────────────
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

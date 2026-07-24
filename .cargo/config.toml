@@ -1,0 +1,47 @@
+# QbitOS Cargo configuration.
+#
+# This file is loaded automatically by Cargo for all workspace commands.
+# See: https://doc.rust-lang.org/cargo/reference/config.html
+
+# ─── Windows MSVC linker configuration ───────────────────────────────────────
+#
+# The QbitOS workspace links several C/C++ dependencies (RocksDB, DuckDB,
+# ring, etc.) that are built from source via `cc` and `cmake` crates. Some
+# of these default to the static MSVC runtime (/MT → LIBCMT) while the Rust
+# binary uses the dynamic runtime (/MD → MSVCRT). This mismatch produces:
+#
+#   LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs
+#
+# We fix this two ways:
+#
+# 1. Tell cmake-based builds to use the dynamic CRT (MultiThreadedDLL = /MD).
+#    This is the root-cause fix for librocksdb-sys and libduckdb-sys.
+# 2. Pass /IGNORE:4098 to the linker as a safety net. This silences the
+#    warning WITHOUT removing any libraries — if a dependency genuinely
+#    needs LIBCMT, it is still linked. This is the Microsoft-recommended
+#    way to suppress known-safe linker warnings.
+#
+# Both fixes are applied only on Windows MSVC targets; other platforms are
+# unaffected.
+
+[target.x86_64-pc-windows-msvc]
+rustflags = [
+    "-C", "link-arg=/IGNORE:4098",
+]
+
+[target.aarch64-pc-windows-msvc]
+rustflags = [
+    "-C", "link-arg=/IGNORE:4098",
+]
+
+# ─── Environment variables for build scripts ────────────────────────────────
+#
+# The `[env]` section sets environment variables for all build scripts
+# invoked by Cargo (including cc and cmake crate builds).
+#
+# CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL tells cmake to use /MD
+# (dynamic multi-threaded CRT) for all C++ builds, matching Rust's default.
+# See: https://cmake.org/cmake/help/latest/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
+
+[env]
+CMAKE_MSVC_RUNTIME_LIBRARY = "MultiThreadedDLL"

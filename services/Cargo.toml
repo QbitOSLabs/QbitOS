@@ -1,0 +1,84 @@
+[package]
+name = "qbitos-services"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "HTTP/REST, WebSocket, and RPC service layer for QbitOS"
+
+[lib]
+name = "qbitos_services"
+path = "src/lib.rs"
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true, features = ["full"] }
+tokio-stream = { workspace = true }
+tokio-util = { workspace = true, features = ["full"] }
+futures = { workspace = true }
+async-trait = { workspace = true }
+
+# Concurrency
+parking_lot = { workspace = true }
+flume = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+# HTTP stack (axum 0.8 + tower)
+axum = { version = "0.8", features = ["ws", "json", "macros", "tokio"] }
+tower = { version = "0.5", features = ["util", "limit", "timeout"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip"] }
+hyper = { version = "1.5", features = ["full"] }
+hyper-util = { version = "0.1", features = ["tokio"] }
+
+# Misc
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+ahash = { workspace = true }
+itertools = { workspace = true }
+sha2 = "0.10"
+subtle = "2.6"
+async-stream = "0.3"
+
+# QbitOS subsystems (minimal set to avoid pulling candle-core / parquet)
+qbitos-memory = { workspace = true }
+qbitos-skills = { workspace = true }
+qbitos-training = { workspace = true }
+qbitos-kernel = { workspace = true }
+qbitos-algorithms = { workspace = true }
+qbitos-multilingual = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util", "macros", "rt-multi-thread"] }
+tempfile = "3.10"
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
+[features]
+default = []
+# gRPC server (tonic + prost). Adds ~10s to clean builds.
+grpc = ["tonic", "prost", "tonic-build"]
+
+[dependencies.tonic]
+version = "0.12"
+features = ["tls", "tls-roots", "gzip"]
+optional = true
+
+[dependencies.prost]
+version = "0.13"
+optional = true
+
+[build-dependencies.tonic-build]
+version = "0.12"
+optional = true
+
+[build-dependencies.prost-build]
+version = "0.13"
+optional = true

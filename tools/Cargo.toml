@@ -1,0 +1,52 @@
+[package]
+name = "qbitos-tools"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Tool virtual machine with WASM sandbox, permissions, and executor for QbitOS"
+
+[lib]
+name = "qbitos_tools"
+path = "src/lib.rs"
+
+[dependencies]
+tokio.workspace = true
+async-trait.workspace = true
+parking_lot.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+ahash = { workspace = true, features = ["serde"] }
+indexmap.workspace = true
+itertools.workspace = true
+
+qbitos-memory.workspace = true
+qbitos-multilingual.workspace = true
+
+# Built-in tools
+reqwest.workspace = true
+serde_yaml.workspace = true
+mime_guess = "2.0"
+sha2 = "0.10"
+
+# Optional WASM sandbox
+wasmtime = { workspace = true, optional = true }
+wasmtime-wasi = { workspace = true, optional = true }
+regex = "1.11"
+
+[features]
+default = []
+wasm = ["dep:wasmtime", "dep:wasmtime-wasi"]
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }
+tempfile = "3.10"

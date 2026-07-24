@@ -1,0 +1,64 @@
+[package]
+name = "qbitos-kernel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Cognitive kernel, scheduler, event bus, and runtime for QbitOS"
+
+[lib]
+name = "qbitos_kernel"
+path = "src/lib.rs"
+
+[[bin]]
+name = "qbitos-kernel"
+path = "src/bin/qbitos_kernel.rs"
+
+[[bench]]
+name = "cognitive_loop"
+harness = false
+path = "benches/cognitive_loop.rs"
+
+[dependencies]
+tokio.workspace = true
+tokio-stream.workspace = true
+tokio-util.workspace = true
+futures.workspace = true
+async-trait.workspace = true
+parking_lot.workspace = true
+flume.workspace = true
+
+serde.workspace = true
+serde_json.workspace = true
+postcard.workspace = true
+
+thiserror.workspace = true
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tracing-error.workspace = true
+
+uuid.workspace = true
+chrono.workspace = true
+dashmap.workspace = true
+ahash.workspace = true
+indexmap.workspace = true
+smallvec.workspace = true
+arc-swap.workspace = true
+num_cpus.workspace = true
+sysinfo.workspace = true
+rayon.workspace = true
+itertools.workspace = true
+once_cell.workspace = true
+toml.workspace = true
+
+qbitos-memory.workspace = true
+qbitos-planner.workspace = true
+qbitos-skills.workspace = true
+qbitos-tools.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+proptest = "1.5"
+tokio = { workspace = true, features = ["test-util"] }

@@ -17,7 +17,7 @@ anyhow = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 reqwest = { version = "0.12", features = ["json"] }
-tokio-tungstenite = "0.24"
+tokio-tungstenite = "0.29"
 
 qbitos-services = { workspace = true }
 qbitos-training = { workspace = true }

@@ -30,15 +30,15 @@ itertools.workspace = true
 rayon.workspace = true
 
 rustfft = "6.2"
-rubato = "0.16"
+rubato = "4.0"
 dasp = { version = "0.11", features = ["all"] }
 
 qbitos-neural-engine.workspace = true
 qbitos-memory.workspace = true
 
 # Optional: live audio I/O via cpal (requires ALSA on Linux)
-cpal = { version = "0.15", optional = true }
-symphonia = { version = "0.5", features = ["mp3", "wav", "ogg", "flac", "aac"] }
+cpal = { version = "0.18", optional = true }
+symphonia = { version = "0.6", features = ["mp3", "wav", "ogg", "flac", "aac"] }
 
 [features]
 default = []

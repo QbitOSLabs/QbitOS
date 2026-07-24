@@ -36,13 +36,13 @@ itertools.workspace = true
 half.workspace = true
 rayon.workspace = true
 
-candle-core = "0.9"
-candle-nn = "0.9"
-candle-transformers = "0.9"
-tokenizers = "0.21"
-hf-hub = { version = "0.4", default-features = false, features = ["tokio", "rustls-tls", "ureq"] }
+candle-core = "0.11"
+candle-nn = "0.11"
+candle-transformers = "0.11"
+tokenizers = "0.22"
+hf-hub = { version = "0.5", default-features = false, features = ["tokio", "rustls-tls", "ureq"] }
 rand = { version = "0.8", features = ["small_rng"] }
-ndarray = "0.16"
+ndarray = "0.17"
 
 [features]
 default = []

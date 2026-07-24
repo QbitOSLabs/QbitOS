@@ -50,7 +50,7 @@ thiserror = { workspace = true }
 
 # HTTP server for embedded service mode (frontend connects to localhost:8080)
 axum = { version = "0.8", features = ["ws", "json", "macros", "tokio"] }
-tower-http = { version = "0.6", features = ["cors"] }
+tower-http = { version = "0.7", features = ["cors"] }
 
 [features]
 # Default: enable both CLI and desktop modes. The Tauri CLI runs

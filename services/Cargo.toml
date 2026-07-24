@@ -30,7 +30,7 @@ serde_json = { workspace = true }
 # HTTP stack (axum 0.8 + tower)
 axum = { version = "0.8", features = ["ws", "json", "macros", "tokio"] }
 tower = { version = "0.5", features = ["util", "limit", "timeout"] }
-tower-http = { version = "0.6", features = ["cors", "trace", "compression-gzip"] }
+tower-http = { version = "0.7", features = ["cors", "trace", "compression-gzip"] }
 hyper = { version = "1.5", features = ["full"] }
 hyper-util = { version = "0.1", features = ["tokio"] }
 
@@ -43,7 +43,7 @@ chrono = { workspace = true }
 uuid = { workspace = true }
 ahash = { workspace = true }
 itertools = { workspace = true }
-sha2 = "0.10"
+sha2 = "0.11"
 subtle = "2.6"
 async-stream = "0.3"
 
@@ -72,13 +72,13 @@ features = ["tls", "tls-roots", "gzip"]
 optional = true
 
 [dependencies.prost]
-version = "0.13"
+version = "0.14"
 optional = true
 
 [build-dependencies.tonic-build]
-version = "0.12"
+version = "0.14"
 optional = true
 
 [build-dependencies.prost-build]
-version = "0.13"
+version = "0.14"
 optional = true

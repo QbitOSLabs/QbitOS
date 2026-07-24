@@ -62,7 +62,7 @@ async-trait = "0.1"
 parking_lot = "0.12"
 crossbeam = "0.8"
 crossbeam-channel = "0.5"
-flume = "0.11"
+flume = "0.12"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -70,7 +70,7 @@ serde_json = "1.0"
 serde_yaml = "0.9"
 postcard = { version = "1.1", features = ["alloc"] }
 rmp-serde = "1.3"
-toml = "0.8"
+toml = "1.1"
 
 # Errors & logging
 thiserror = "2.0"
@@ -82,13 +82,13 @@ tracing-appender = "0.2"
 tracing-error = "0.2"
 
 # ML / neural
-candle-core = "0.9"
-candle-nn = "0.9"
-candle-transformers = "0.9"
+candle-core = "0.11"
+candle-nn = "0.11"
+candle-transformers = "0.11"
 candle-flash-attn = "0.9"
 candle-cuda = "0.9"
-tokenizers = "0.21"
-hf-hub = { version = "0.4", default-features = false, features = ["tokio", "rustls-tls"] }
+tokenizers = "0.22"
+hf-hub = { version = "0.5", default-features = false, features = ["tokio", "rustls-tls"] }
 
 # Vision
 image = "0.25"
@@ -96,24 +96,24 @@ imageproc = "0.25"
 rusttype = "0.9"
 
 # Audio / speech
-cpal = "0.15"
-symphonia = { version = "0.5", features = ["mp3", "wav", "ogg", "flac", "aac"] }
+cpal = "0.18"
+symphonia = { version = "0.6", features = ["mp3", "wav", "ogg", "flac", "aac"] }
 rustfft = "6.2"
-rubato = "0.16"
+rubato = "4.0"
 dasp = { version = "0.11", features = ["all"] }
 
 # Database & storage
 sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json", "migrate"] }
 qdrant-client = "1.12"
-redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
-rocksdb = { version = "0.23", features = ["multi-threaded-cf"] }
+redis = { version = "1.2", features = ["tokio-comp", "connection-manager"] }
+rocksdb = { version = "0.24", features = ["multi-threaded-cf"] }
 mongodb = { version = "3", default-features = false, features = ["rustls-tls", "compat-3-0-0"] }
 duckdb = { version = "1", features = ["bundled", "chrono", "serde_json"] }
 
 # Distributed / messaging
 tonic = { version = "0.12", features = ["tls", "tls-roots", "gzip"] }
-prost = "0.13"
-prost-build = "0.13"
+prost = "0.14"
+prost-build = "0.14"
 quinn = "0.11"
 rcgen = "0.13"
 reqwest = { version = "0.12", features = ["json", "stream", "rustls-tls", "multipart"] }
@@ -121,23 +121,23 @@ nats = "0.25"
 lapin = "2.5"
 
 # Graph
-petgraph = "0.7"
+petgraph = "0.8"
 graphblas-rs = "1.0"
 
 # Sandbox / WASM
-wasmtime = { version = "27.0", features = ["cranelift", "parallel-compilation", "cache"] }
-wasmtime-wasi = "27.0"
+wasmtime = { version = "34.0", features = ["cranelift", "parallel-compilation", "cache"] }
+wasmtime-wasi = "34.0"
 wasi-common = "27.0"
 
 # Crypto & security
 ring = "0.17"
-sha2 = "0.10"
+sha2 = "0.11"
 blake3 = "1.5"
 argon2 = "0.5"
 chacha20poly1305 = "0.10"
 ed25519-dalek = { version = "2.1", features = ["pkcs8", "pem", "rand_core"] }
 rand = "0.8"
-rand_chacha = "0.3"
+rand_chacha = "0.9"
 
 # Utility
 uuid = { version = "1.11", features = ["v4", "v7", "serde"] }
@@ -147,10 +147,10 @@ url = "2.5"
 bytes = "1.8"
 byteorder = "1.5"
 hex = "0.4"
-base64 = "0.22"
+base64 = "0.23"
 once_cell = "1.20"
 lazy_static = "1.5"
-itertools = "0.13"
+itertools = "0.14"
 either = "1.13"
 dashmap = "6.1"
 ahash = "0.8"
@@ -159,10 +159,10 @@ smallvec = { version = "1.13", features = ["serde", "union"] }
 smol_str = "0.3"
 arc-swap = "1.7"
 num_cpus = "1.16"
-sysinfo = "0.32"
+sysinfo = "0.36"
 nvml-wrapper = "0.10"
 rayon = "1.10"
-ndarray = { version = "0.16", features = ["rayon", "serde"] }
+ndarray = { version = "0.17", features = ["rayon", "serde"] }
 ndarray-rand = "0.15"
 half = { version = "2.4", features = ["num-traits", "rand_distr"] }
 num-traits = "0.2"
@@ -172,7 +172,7 @@ config = "0.14"
 dotenvy = "0.15"
 
 # Dev (referenced via `[dev-dependencies]` with `workspace = true`)
-criterion = { version = "0.5", features = ["async_tokio"] }
+criterion = { version = "0.7", features = ["async_tokio"] }
 proptest = "1.5"
 
 # Internal crates
